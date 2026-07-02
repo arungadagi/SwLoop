@@ -101,3 +101,22 @@ While a run is active, edit `.loop/control.md` to `PAUSE`, add `GUIDANCE: <text>
 - The Pi extension assumes `pi -p ... --session <path>` creates a new session file if the path doesn't already exist. Not independently verified against a real Pi install yet.
 - The Pi extension shells out to `pi` on PATH via `pi.exec`. On Windows, npm installs `pi` as a `.cmd` shim; if spawning fails, that resolution is the first thing to check.
 - The `package.json` `pi.extensions` path points at `.pi/extensions` (a directory containing one `loop-subagent/index.ts` subfolder). Whether `pi install`'s manifest-driven loading recurses into that subfolder the same way Pi's native project-local `.pi/extensions/*/index.ts` scanning does has not been verified.
+
+## Todos & Critical Points
+
+- Verify end-to-end on a real Pi host: install with `pi install git:github.com/arungadagi/SwLoop` and confirm the `loop_subagent` extension spawns sessions and `pi` session files are created as expected.
+- Verify OpenCode plugin behavior on a real OpenCode install: open this repo and confirm `.opencode/plugins/loop-install.js` runs and copies skill/agents/command into the user's global config paths without manual steps.
+- Run the full smoke E2E locally (Pi + OpenCode) and exercise the following scenarios:
+  - fresh project with no test framework (bootstrap flow), confirm Phase 1 harness sanity check runs and returns actionable errors to the tester when broken.
+  - project with existing tests (pytest, jest, go test, etc.), confirm test detection and that orchestrator runs the real suite as ground truth.
+  - multi-requirement document decomposition: confirm `.loop/items/<NN>-<slug>/` layout and sequential item processing works.
+- Add CI that runs the repo self-checks on push: the two existing tests `strip-frontmatter.test.mjs` and `compute-targets.test.mjs` plus a Node syntax/type check for the Pi extension. This prevents regressions in the install/strip toolchain.
+- Consider publishing options: (A) keep repo install-only and document steps (current), (B) publish to npm so OpenCode plugin path can be installed from registry (requires npm publish).
+- UX follow-ups (optional): make `--no-decompose` explicit in `/loop` help, support parallel batch processing, and add CI/git-hook integration to fail PRs when loops regress tests.
+
+Critical points / known blockers
+
+- The orchestrator's Phase 1 harness sanity check is implemented in SKILL.md, but must be validated against actual `pi` and `opencode` tool behavior in the wild — otherwise a broken bootstrap could still be misrouted.
+- `pi -p --session <path>` behavior on Windows (creation of `.cmd` shims and session files) needs verification; Windows path and `.cmd` execution are common failure modes for Pi extension.
+- OpenCode plugin auto-install may be gated by a trust/approval UI or require a specific plugin factory signature that differs between versions — test on real OpenCode to be sure.
+- The current implementation uses sequential processing for batch items; parallelism is intentionally skipped for simplicity (ponytail: direct, sequential). Add parallelism only if you need it.
