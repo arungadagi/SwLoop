@@ -1,0 +1,25 @@
+{
+  "name": "loop-skill",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "TDD orchestration skill for OpenCode and Pi: tester -> reviewer -> developer -> reviewer -> verify, with a hard iteration cap and user-controllable pause/guidance/abort.",
+  "keywords": [
+    "opencode",
+    "opencode-skill",
+    "pi-package",
+    "pi-coding-agent",
+    "agent-skills",
+    "tdd",
+    "ai-agent"
+  ],
+  "pi": {
+    "extensions": ["./.pi/extensions"],
+    "skills": ["./.agents/skills"]
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-ai": "*",
+    "typebox": "*"
+  }
+}
